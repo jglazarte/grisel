@@ -53,6 +53,16 @@ formOnboarding.addEventListener('submit', (e) => {
   }
 });
 
+// --- LOGO (Editar Perfil) ---
+const logoHeader = document.getElementById('logo-header');
+if (logoHeader) {
+  logoHeader.addEventListener('click', () => {
+    document.getElementById('onboard-nombre').value = usuario || '';
+    document.getElementById('onboard-altura').value = altura || '';
+    modalOnboarding.classList.remove('hidden');
+  });
+}
+
 // --- NAVEGACIÓN ---
 navItems.forEach(item => {
   item.addEventListener('click', () => {
@@ -176,13 +186,13 @@ const formActividad = document.getElementById('form-actividad');
 formActividad.addEventListener('submit', (e) => {
   e.preventDefault();
   const fecha = document.getElementById('actividad-fecha').value;
-  const hora = document.getElementById('actividad-hora').value;
+  const duracion = document.getElementById('actividad-duracion').value.trim();
   const desc = document.getElementById('actividad-desc').value.trim();
   
-  if(fecha && hora && desc) {
+  if(fecha && duracion && desc) {
     const registro = {
       fecha: formatearFecha(fecha),
-      hora: hora,
+      hora: duracion, // Usamos la propiedad hora para almacenar la duración por compatibilidad
       desc: desc
     };
     historialActividades.push(registro);
@@ -190,6 +200,7 @@ formActividad.addEventListener('submit', (e) => {
     
     renderActividades();
     document.getElementById('actividad-desc').value = '';
+    document.getElementById('actividad-duracion').value = '';
   }
 });
 
@@ -200,9 +211,32 @@ function renderActividades() {
   copiaInvertida.forEach(item => {
     const li = document.createElement('li');
     li.innerHTML = `
-      <span><span class="li-date">${item.fecha} ${item.hora}</span> | ${item.desc}</span>
+      <span><span class="li-date">${item.fecha} (${item.hora})</span> | ${item.desc}</span>
     `;
     lista.appendChild(li);
+  });
+}
+
+// --- VACIAR REGISTROS ---
+const btnVaciarAlimentos = document.getElementById('btn-vaciar-alimentos');
+if (btnVaciarAlimentos) {
+  btnVaciarAlimentos.addEventListener('click', () => {
+    if(confirm('¿Estás seguro de que quieres borrar todo el historial de alimentación?')) {
+      historialAlimentos = [];
+      localStorage.removeItem('NutriAzul_Comidas');
+      renderAlimentos();
+    }
+  });
+}
+
+const btnVaciarActividades = document.getElementById('btn-vaciar-actividades');
+if (btnVaciarActividades) {
+  btnVaciarActividades.addEventListener('click', () => {
+    if(confirm('¿Estás seguro de que quieres borrar todo el historial de actividades?')) {
+      historialActividades = [];
+      localStorage.removeItem('NutriAzul_Actividades');
+      renderActividades();
+    }
   });
 }
 
@@ -247,41 +281,15 @@ document.getElementById('btn-exportar-actividades').addEventListener('click', ()
 const btnCalendario = document.getElementById('btn-calendario');
 if (btnCalendario) {
   btnCalendario.addEventListener('click', () => {
-    const title = 'Turno NutriAzul';
-    const description = 'Mi próximo turno de nutrición con NutriAzul.';
-    
-    // Crear una fecha por defecto para mañana a las 10:00 AM
-    const now = new Date();
-    now.setDate(now.getDate() + 1);
-    now.setHours(10, 0, 0);
-    
-    const end = new Date(now);
-    end.setHours(now.getHours() + 1);
-
-    // Formato de fecha para ICS (YYYYMMDDTHHMMSSZ)
-    const formatDate = (date) => {
-      return date.toISOString().replace(/-|:|\.\d+/g, '');
-    };
-    
-    const icsData = `BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-DTSTART:${formatDate(now)}
-DTEND:${formatDate(end)}
-SUMMARY:${title}
-DESCRIPTION:${description}
-END:VEVENT
-END:VCALENDAR`;
-
-    const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'turno_nutriazul.ics';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Abrir la aplicación nativa de calendario
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      // Intenta abrir el calendario de iOS
+      window.location.href = 'calshow://';
+    } else {
+      // Fallback a Google Calendar en la web para otros dispositivos
+      window.open('https://calendar.google.com/calendar/r/eventedit?text=Turno+NutriAzul&details=Mi+pr%C3%B3ximo+turno+de+nutrici%C3%B3n+con+NutriAzul', '_blank');
+    }
   });
 }
 

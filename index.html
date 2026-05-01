@@ -21,7 +21,7 @@
 <body>
   <!-- Header -->
   <header class="app-header">
-    <div class="logo-container">
+    <div class="logo-container" id="logo-header" style="cursor:pointer;">
       <img src="icons/icon-192.png" alt="NutriAzul Logo" class="logo">
       <h1>NutriAzul</h1>
     </div>
@@ -81,7 +81,7 @@
           </div>
           <div class="action-group row">
             <button type="submit" class="btn secondary">Guardar</button>
-            <button type="reset" class="btn outline">Vaciar</button>
+            <button type="button" id="btn-vaciar-alimentos" class="btn outline">Vaciar Registros</button>
           </div>
         </form>
       </div>
@@ -105,14 +105,14 @@
         <form id="form-actividad">
           <div class="input-group row">
             <input type="date" id="actividad-fecha" required>
-            <input type="time" id="actividad-hora" required>
+            <input type="text" id="actividad-duracion" placeholder="Duración (ej: 30 min)" required>
           </div>
           <div class="input-group">
-            <input type="text" id="actividad-desc" placeholder="Actividad (ej: 30 min correr)" required>
+            <input type="text" id="actividad-desc" placeholder="Actividad (ej: Correr)" required>
           </div>
           <div class="action-group row">
             <button type="submit" class="btn secondary">Guardar</button>
-            <button type="reset" class="btn outline">Vaciar</button>
+            <button type="button" id="btn-vaciar-actividades" class="btn outline">Vaciar Registros</button>
           </div>
         </form>
       </div>
